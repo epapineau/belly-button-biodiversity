@@ -2,11 +2,12 @@ function buildMetadata(sample) {
 
   // @TODO: Complete the following function that builds the metadata panel
   var url = `/metadata/${sample}`;
+
   // Use `d3.json` to fetch the metadata for a sample
   d3.json(url).then(function(response){
 
     // Use d3 to select the panel with id of `#sample-metadata`
-    var sampleMeta = d3.select("#sample-metadata")
+    var sampleMeta = d3.select("#sample-metadata");
 
     // Use `.html("") to clear any existing metadata
     sampleMeta.html("");
@@ -14,8 +15,6 @@ function buildMetadata(sample) {
 
     // Use `Object.entries` to add each key and value pair to the panel
     Object.entries(response).forEach(entry => {
-      console.log(entry[0]);
-      console.log(entry[1]);
       sampleMeta.append("li")
       .text(`${entry[0]}: ${entry[1]}`)
       .style("list-style-type", "none")
@@ -31,10 +30,92 @@ function buildMetadata(sample) {
 function buildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
+  var url = `/samples/${sample}`;
 
-    // @TODO: Build a Bubble Chart using the sample data
+    d3.json(url).then(function(response){
+      console.log(response)
 
-    // @TODO: Build a Pie Chart
+      // @TODO: Build a Bubble Chart using the sample data
+      var bubbleTrace = {
+        x: response.otu_ids,
+        y: response.sample_values,
+        mode: 'markers',
+        marker: {
+          // color: ['rgb(93, 164, 214)', 'rgb(255, 144, 14)',  'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
+          opacity: 0.6,
+        }
+      };
+      
+      // var layout = {
+      //   title: 'Marker Size and Color',
+      //   showlegend: false,
+      //   height: 600,
+      //   width: 600
+      // };
+      
+      Plotly.newPlot('bubble', [bubbleTrace]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      // @TODO: Build a Pie Chart
+
+
+      var aggregateData = {};
+      response.sample_values.forEach(function(value, index) {
+        var measureType = response.otu_labels[index];
+        if(aggregateData[measureType]){
+          aggregateData[measureType] += value
+        }
+        else {
+          aggregateData[measureType] = value
+        }
+      });
+
+      var sortable = [];
+      for (var data in aggregateData) {
+        sortable.push([data, aggregateData[data]]);
+      }
+    
+      sortable.sort(function(a, b) {
+          return b[1] - a[1];
+      });
+      topTenData = sortable.slice(0, 10);
+
+
+      var pieTrace = {
+        labels: topTenData.map(entry => entry[0]),
+        values: topTenData.map(entry => entry[1]),
+        type: "pie"
+      };
+
+      var layout = {showlegend: false};
+
+      Plotly.newPlot("pie", [pieTrace], layout);
+    });
     // HINT: You will need to use slice() to grab the top 10 sample_values,
     // otu_ids, and labels (10 each).
 }
