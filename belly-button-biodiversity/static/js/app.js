@@ -33,30 +33,30 @@ function buildCharts(sample) {
   var url = `/samples/${sample}`;
 
     d3.json(url).then(function(response){
-      console.log(response)
-
       // @TODO: Build a Bubble Chart using the sample data
       var bubbleTrace = {
         x: response.otu_ids,
         y: response.sample_values,
+        text: response.otu_labels,
         mode: 'markers',
         marker: {
-          // color: ['rgb(93, 164, 214)', 'rgb(255, 144, 14)',  'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
+          color: response.otu_ids,
           opacity: 0.6,
+          size: response.sample_values
         }
       };
       
-      // var layout = {
-      //   title: 'Marker Size and Color',
-      //   showlegend: false,
-      //   height: 600,
-      //   width: 600
-      // };
+      var bubbleLayout = {
+        title: 'Species Distribution of Belly Button Population',
+        xaxis: {
+          title: 'OTU ID'
+        }
+      };
       
-      Plotly.newPlot('bubble', [bubbleTrace]);
+      Plotly.newPlot('bubble', [bubbleTrace], bubbleLayout);
 
       // @TODO: Build a Pie Chart
-      // Count bacterial across categories
+      // Count bacteria across categories
       var aggregateData = {};
       response.sample_values.forEach(function(value, index) {
         var measureType = response.otu_labels[index];
@@ -79,6 +79,8 @@ function buildCharts(sample) {
           return b[1] - a[1];
       });
       topTenData = sortable.slice(0, 10);
+
+      console.log(topTenData)
 
       // Create pie chart
       var pieTrace = {
