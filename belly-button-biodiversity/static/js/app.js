@@ -88,8 +88,13 @@ function buildCharts(sample) {
         values: topTenData.map(entry => entry[1]),
         type: "pie"
       };
-      var layout = {showlegend: false};
-      Plotly.newPlot("pie", [pieTrace], layout);
+
+      var pieLayout = {
+        title: 'Distribution of Top Ten Bacterial Groups',
+        showlegend: false
+      };
+
+      Plotly.newPlot("pie", [pieTrace], pieLayout);
     });
 }
 
