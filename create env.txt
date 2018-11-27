@@ -1,0 +1,1 @@
+conda create -n pet_pals_env python=3.6

@@ -23,7 +23,7 @@ function buildMetadata(sample) {
     });
     
     // BONUS: Build the Gauge Chart
-    // buildGauge(data.WFREQ);
+    buildGauge(response.WFREQ);
   });
 }
 
@@ -55,35 +55,8 @@ function buildCharts(sample) {
       
       Plotly.newPlot('bubble', [bubbleTrace]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       // @TODO: Build a Pie Chart
-
-
+      // Count bacterial across categories
       var aggregateData = {};
       response.sample_values.forEach(function(value, index) {
         var measureType = response.otu_labels[index];
@@ -95,29 +68,27 @@ function buildCharts(sample) {
         }
       });
 
+      // Convert into an array of arrays in order to sort
       var sortable = [];
       for (var data in aggregateData) {
         sortable.push([data, aggregateData[data]]);
       }
-    
+      
+      // Sort array
       sortable.sort(function(a, b) {
           return b[1] - a[1];
       });
       topTenData = sortable.slice(0, 10);
 
-
+      // Create pie chart
       var pieTrace = {
         labels: topTenData.map(entry => entry[0]),
         values: topTenData.map(entry => entry[1]),
         type: "pie"
       };
-
       var layout = {showlegend: false};
-
       Plotly.newPlot("pie", [pieTrace], layout);
     });
-    // HINT: You will need to use slice() to grab the top 10 sample_values,
-    // otu_ids, and labels (10 each).
 }
 
 function init() {
